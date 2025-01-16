@@ -90,6 +90,7 @@ nav:
   - Decisions:
     - Overview: architecture/decisions/000-index.md
     - "ADR-001: Drop Kafka Dependency": architecture/decisions/001-drop-kafka-dependency.md
+    - "ADR-002: Workflow Orchestration": architecture/decisions/002-workflow-orchestration.md
   - Design:
     - Workflow State Tracking: architecture/design/workflow-state-tracking.md
 - Operations:
