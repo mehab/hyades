@@ -35,6 +35,8 @@ public class IntegrityMeta implements Serializable {
 
     private String metaSourceUrl;
 
+    private final Date fetchedAt = new Date();
+
     public String getMd5() {
         return md5;
     }
@@ -82,4 +84,9 @@ public class IntegrityMeta implements Serializable {
     public void setMetaSourceUrl(String metaSourceUrl) {
         this.metaSourceUrl = metaSourceUrl;
     }
+
+    public Date getFetchedAt() {
+        return fetchedAt;
+    }
+
 }
