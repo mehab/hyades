@@ -82,7 +82,7 @@
     <lib.org-json.version>20240303</lib.org-json.version>
     <lib.pebble.version>3.2.2</lib.pebble.version>
     <lib.resilience4j.version>2.3.0</lib.resilience4j.version>
-    <lib.open.vulnerability.clients.version>7.1.0</lib.open.vulnerability.clients.version>
+    <lib.open.vulnerability.clients.version>7.2.0</lib.open.vulnerability.clients.version>
     <lib.packageurl-java.version>1.5.0</lib.packageurl-java.version>
     <lib.protobuf-java.version>4.29.3</lib.protobuf-java.version>
     <lib.quarkus-github-api.version>1.322.0</lib.quarkus-github-api.version>
