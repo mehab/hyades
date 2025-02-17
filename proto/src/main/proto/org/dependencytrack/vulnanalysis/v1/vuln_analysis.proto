@@ -33,6 +33,7 @@ enum Scanner {
   SCANNER_INTERNAL = 2;
   SCANNER_OSSINDEX = 3;
   SCANNER_SNYK = 4;
+  SCANNER_TRIVY = 5;
 }
 
 message ScanCommand {
