@@ -1,0 +1,23 @@
+{
+  "name": "hyades",
+  "version": "0.6.0",
+  "description": "Hyades is the followup project, that decouples the responsibilities from Dependency-Track's monolithic API-server into separate scalable services",
+  "scripts": {
+    "playwright:init": "npm ci && npx playwright install --with-deps",
+    "playwright:generate:tests": "npx bddgen",
+    "playwright:clean:initial:chromium": "npx bddgen && npx playwright test --project=setup_initial",
+    "playwright:clean:test:chromium": "npx bddgen && npx playwright test --project=setup_initial && npx playwright test --project=chromium_test_workflow",
+    "playwright:test:chromium": "npx bddgen && npx playwright test --project=chromium_test_workflow",
+    "playwright:test:only:chromium": "npx bddgen && npx playwright test --project=chromium_test_only_workflow",
+    "playwright:test:firefox": "npx bddgen && npx playwright test --project=firefox_test_workflow",
+    "playwright:test:webkit": "npx bddgen && npx playwright test --project=webkit_test_workflow",
+    "playwright:show:report": "npx playwright show-report playwright-test-results/playwright-report"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.2",
+    "allure-playwright": "^3.1.0",
+    "playwright-bdd": "^8.0.1"
+  }
+}
