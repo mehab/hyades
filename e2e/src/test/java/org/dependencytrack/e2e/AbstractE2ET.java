@@ -55,7 +55,7 @@ import static org.testcontainers.lifecycle.Startables.deepStart;
 public class AbstractE2ET {
 
     protected static DockerImageName POSTGRES_IMAGE = DockerImageName.parse("postgres:15-alpine");
-    protected static DockerImageName REDPANDA_IMAGE = DockerImageName.parse("docker.redpanda.com/redpandadata/redpanda:v24.2.12");
+    protected static DockerImageName REDPANDA_IMAGE = DockerImageName.parse("docker.redpanda.com/redpandadata/redpanda:v24.2.17");
     protected static DockerImageName API_SERVER_IMAGE = DockerImageName.parse("ghcr.io/dependencytrack/hyades-apiserver")
             .withTag(Optional.ofNullable(System.getenv("APISERVER_VERSION")).orElse("snapshot"));
     protected static DockerImageName MIRROR_SERVICE_IMAGE = DockerImageName.parse("ghcr.io/dependencytrack/hyades-mirror-service")

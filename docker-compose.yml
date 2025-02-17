@@ -212,7 +212,7 @@ services:
     restart: unless-stopped
 
   redpanda:
-    image: docker.redpanda.com/redpandadata/redpanda:v24.2.12
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.17
     container_name: dt-redpanda
     command:
       - redpanda
@@ -249,7 +249,7 @@ services:
     restart: unless-stopped
 
   redpanda-init:
-    image: docker.redpanda.com/redpandadata/redpanda:v24.2.12
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.17
     container_name: dt-redpanda-init
     depends_on:
       redpanda:
@@ -273,7 +273,7 @@ services:
     restart: on-failure
 
   redpanda-console:
-    image: docker.redpanda.com/vectorized/console:v2.7.2
+    image: docker.redpanda.com/redpandadata/console:v2.8.2
     container_name: dt-redpanda-console
     entrypoint: "/bin/sh"
     command: "-c 'echo \"$$CONSOLE_CONFIG_FILE\" > \"$$CONFIG_FILEPATH\"; /app/console'"
@@ -369,7 +369,7 @@ services:
     restart: unless-stopped
 
   grafana:
-    image: grafana/grafana-oss:11.3.1
+    image: grafana/grafana-oss:11.5.1
     container_name: dt-grafana
     depends_on:
       - prometheus
