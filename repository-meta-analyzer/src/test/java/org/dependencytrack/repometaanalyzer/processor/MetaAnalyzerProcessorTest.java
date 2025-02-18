@@ -29,8 +29,6 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -48,7 +46,6 @@ import org.dependencytrack.proto.KafkaProtobufSerde;
 import org.dependencytrack.proto.repometaanalysis.v1.AnalysisCommand;
 import org.dependencytrack.proto.repometaanalysis.v1.AnalysisResult;
 import org.dependencytrack.proto.repometaanalysis.v1.Component;
-import org.dependencytrack.proto.repometaanalysis.v1.FetchMeta;
 import org.dependencytrack.repometaanalyzer.repositories.RepositoryAnalyzerFactory;
 import org.dependencytrack.repometaanalyzer.serde.KafkaPurlSerde;
 import org.junit.jupiter.api.AfterEach;
@@ -56,6 +53,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import java.util.Map;
 import java.util.UUID;
 
@@ -225,7 +224,7 @@ class MetaAnalyzerProcessorTest {
                                         {
                                             "latest": "v6.6.6"
                                         }
-                                         """.getBytes(),
+                                        """.getBytes(),
                                 new ContentTypeHeader("application/json"))).withStatus(HttpStatus.SC_OK)));
 
         wireMockServer1.stubFor(head(urlPathEqualTo("/@apollo/federation/-/@apollo/federation-0.19.1.tgz"))
@@ -241,7 +240,7 @@ class MetaAnalyzerProcessorTest {
                                 .setPurl("pkg:npm/@apollo/federation@0.19.1")
                                 .setUuid(uuid.toString())
                                 .setInternal(true))
-                        .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA_AND_LATEST_VERSION).build());
+                        .build());
 
         inputTopic.pipeInput(inputRecord);
         assertThat(outputTopic.getQueueSize()).isEqualTo(1);
@@ -265,61 +264,6 @@ class MetaAnalyzerProcessorTest {
 
     @Test
     @TestTransaction
-    void testDifferentSourcesForRepoMeta() throws Exception {
-        entityManager.createNativeQuery("""
-                        INSERT INTO "REPOSITORY" ("TYPE", "ENABLED","IDENTIFIER", "INTERNAL", "URL", "AUTHENTICATIONREQUIRED", "RESOLUTION_ORDER") VALUES
-                                            ('NPM', true, 'central', true, :url1, false, 1),
-                                            ('NPM', true, 'internal', true, :url2, false, 2);
-                        """)
-                .setParameter("url1", String.format("http://localhost:%d", wireMockServer1.port()))
-                .setParameter("url2", String.format("http://localhost:%d", wireMockServer2.port()))
-                .executeUpdate();
-        wireMockServer1.stubFor(get(urlPathEqualTo("/-/package/%40apollo%2Ffederation/dist-tags"))
-                .willReturn(aResponse().withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                        .withResponseBody(Body.ofBinaryOrText("""
-                                        {
-                                            "type": "version"
-                                        }
-                                         """.getBytes(),
-                                new ContentTypeHeader("application/json")))
-                        .withStatus(HttpStatus.SC_OK)));
-
-        wireMockServer2.stubFor(get(urlPathEqualTo("/-/package/%40apollo%2Ffederation/dist-tags"))
-                .willReturn(aResponse().withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                        .withResponseBody(Body.ofBinaryOrText("""
-                                        {
-                                            "latest": "v6.6.6"
-                                        }
-                                         """.getBytes(),
-                                new ContentTypeHeader("application/json")))
-                        .withStatus(HttpStatus.SC_OK)));
-        UUID uuid = UUID.randomUUID();
-        final TestRecord<PackageURL, AnalysisCommand> inputRecord = new TestRecord<>(new PackageURL("pkg:npm/@apollo/federation@0.19.1"),
-                AnalysisCommand.newBuilder()
-                        .setComponent(Component.newBuilder()
-                                .setPurl("pkg:npm/@apollo/federation@0.19.1")
-                                .setUuid(uuid.toString())
-                                .setInternal(true))
-                        .setFetchMeta(FetchMeta.FETCH_META_LATEST_VERSION).build());
-
-        inputTopic.pipeInput(inputRecord);
-        assertThat(outputTopic.getQueueSize()).isEqualTo(1);
-        assertThat(outputTopic.readRecordsToList()).satisfiesExactly(
-                record -> {
-                    assertThat(record.key().getType()).isEqualTo(RepositoryType.NPM.toString().toLowerCase());
-                    assertThat(record.value()).isNotNull();
-                    final AnalysisResult result = record.value();
-                    assertThat(result.hasComponent()).isTrue();
-                    assertThat(result.getComponent().getUuid()).isEqualTo(uuid.toString());
-                    assertThat(result.getRepository()).isEqualTo("internal");
-                    assertThat(result.getLatestVersion()).isEqualTo("v6.6.6");
-                    assertThat(result.hasPublished()).isFalse();
-                });
-
-    }
-
-    @Test
-    @TestTransaction
     void testDifferentSourcesForRepoAndIntegrityMeta() throws Exception {
         entityManager.createNativeQuery("""
                         INSERT INTO "REPOSITORY" ("TYPE", "ENABLED","IDENTIFIER", "INTERNAL", "URL", "AUTHENTICATIONREQUIRED", "RESOLUTION_ORDER") VALUES
@@ -334,7 +278,7 @@ class MetaAnalyzerProcessorTest {
                         .withResponseBody(Body.ofBinaryOrText("""
                                         {
                                         }
-                                         """.getBytes(),
+                                        """.getBytes(),
                                 new ContentTypeHeader("application/json")))
                         .withStatus(HttpStatus.SC_OK)));
 
@@ -349,7 +293,7 @@ class MetaAnalyzerProcessorTest {
                                         {
                                             "latest": "v6.6.6"
                                         }
-                                         """.getBytes(),
+                                        """.getBytes(),
                                 new ContentTypeHeader("application/json")))
                         .withStatus(HttpStatus.SC_OK)));
         UUID uuid = UUID.randomUUID();
@@ -359,7 +303,7 @@ class MetaAnalyzerProcessorTest {
                                 .setPurl("pkg:npm/@apollo/federation@0.19.1")
                                 .setUuid(uuid.toString())
                                 .setInternal(true))
-                        .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA_AND_LATEST_VERSION).build());
+                        .build());
 
         inputTopic.pipeInput(inputRecord);
         assertThat(outputTopic.getQueueSize()).isEqualTo(1);
