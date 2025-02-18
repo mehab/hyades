@@ -1,4 +1,4 @@
-FROM quay.io/quarkus/quarkus-micro-image:2.0
+FROM quay.io/quarkus/quarkus-micro-image:3.0
 ARG TARGETARCH
 WORKDIR /work/
 RUN chown 1001 /work \
