@@ -57,7 +57,7 @@ public class AbstractE2ET {
     protected static DockerImageName POSTGRES_IMAGE = DockerImageName.parse("postgres:15-alpine");
     protected static DockerImageName REDPANDA_IMAGE = DockerImageName.parse("docker.redpanda.com/redpandadata/redpanda:v24.2.17");
     protected static DockerImageName API_SERVER_IMAGE = DockerImageName.parse("ghcr.io/dependencytrack/hyades-apiserver")
-            .withTag(Optional.ofNullable(System.getenv("APISERVER_VERSION")).orElse("snapshot"));
+            .withTag(Optional.ofNullable(System.getenv("APISERVER_VERSION")).orElse("local"));
     protected static DockerImageName MIRROR_SERVICE_IMAGE = DockerImageName.parse("ghcr.io/dependencytrack/hyades-mirror-service")
             .withTag(Optional.ofNullable(System.getenv("HYADES_VERSION")).orElse("snapshot"));
     protected static DockerImageName NOTIFICATION_PUBLISHER_IMAGE = DockerImageName.parse("ghcr.io/dependencytrack/hyades-notification-publisher")
@@ -334,7 +334,7 @@ public class AbstractE2ET {
     }
 
     @AfterEach
-    void afterEach() {
+    void afterEach() throws Exception {
         ApiServerAuthInterceptor.reset();
 
         Optional.ofNullable(vulnAnalyzerContainer).ifPresent(GenericContainer::stop);
