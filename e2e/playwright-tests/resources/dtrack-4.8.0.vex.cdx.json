@@ -1,0 +1,38 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.4",
+  "serialNumber" : "urn:uuid:02040feb-7653-4fd4-a926-5524541053cc",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2024-02-15T00:00:00Z",
+    "component" : {
+      "name" : "Dependency-Track",
+      "version" : "4.8.0",
+      "type" : "application",
+      "bom-ref" : "af9b3f86-cce3-4011-a157-f790d799c3eb"
+    }
+  },
+  "vulnerabilities" : [
+    {
+      "bom-ref" : "79ba5037-0daa-46a6-bdfd-baef388f217b",
+      "id" : "CVE-2018-14335",
+      "source" : {
+        "name" : "NVD"
+      },
+      "analysis" : {
+        "state" : "not_affected",
+        "justification" : "code_not_reachable",
+        "response" : [
+          "will_not_fix"
+        ],
+        "detail" : "The vulnerable backup functionality is not used."
+      },
+      "affects" : [
+        {
+          "ref" : "af9b3f86-cce3-4011-a157-f790d799c3eb"
+        }
+      ]
+    }
+  ]
+}
