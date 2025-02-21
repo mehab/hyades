@@ -91,7 +91,7 @@
     <lib.snappy-java.version>1.1.10.7</lib.snappy-java.version>
     <lib.testcontainers-minio.version>1.20.4</lib.testcontainers-minio.version>
     <lib.wiremock.version>2.35.2</lib.wiremock.version>
-    <quarkus.platform.version>3.18.3</quarkus.platform.version>
+    <quarkus.platform.version>3.19.0</quarkus.platform.version>
     <quarkus.wiremock.version>1.3.3</quarkus.wiremock.version>
     <lib.brotli.version>0.1.2</lib.brotli.version>
     <lib.versatile.version>0.7.0</lib.versatile.version>
