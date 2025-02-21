@@ -37,7 +37,6 @@ import org.dependencytrack.common.KafkaTopic;
 import org.dependencytrack.proto.KafkaProtobufSerde;
 import org.dependencytrack.proto.repometaanalysis.v1.AnalysisCommand;
 import org.dependencytrack.proto.repometaanalysis.v1.AnalysisResult;
-import org.dependencytrack.proto.repometaanalysis.v1.FetchMeta;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,7 +118,6 @@ class RepositoryMetaAnalyzerIT {
             final var command = AnalysisCommand.newBuilder()
                     .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                             .setPurl("pkg:golang/github.com/acme/acme-lib@9.1.1"))
-                    .setFetchMeta(FetchMeta.FETCH_META_LATEST_VERSION)
                     .build();
 
             kafkaCompanion
@@ -181,7 +179,6 @@ class RepositoryMetaAnalyzerIT {
             final var command = AnalysisCommand.newBuilder()
                     .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                             .setPurl("pkg:golang/github.com/acme/acme-lib@9.1.1"))
-                    .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA)
                     .build();
 
             kafkaCompanion
@@ -423,7 +420,6 @@ class RepositoryMetaAnalyzerIT {
             final var command = AnalysisCommand.newBuilder()
                     .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                             .setPurl("pkg:npm/amazon-s3-uri@0.0.1"))
-                    .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA_AND_LATEST_VERSION)
                     .build();
 
             kafkaCompanion
@@ -493,7 +489,6 @@ class RepositoryMetaAnalyzerIT {
             final var command = AnalysisCommand.newBuilder()
                     .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                             .setPurl("pkg:npm/amazon-s3-uri@0.0.1"))
-                    .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA)
                     .build();
 
             kafkaCompanion
