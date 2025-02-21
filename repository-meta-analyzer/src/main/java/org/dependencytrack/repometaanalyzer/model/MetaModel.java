@@ -28,6 +28,7 @@ public class MetaModel implements Serializable {
     private Component component;
     private String latestVersion;
     private Date publishedTimestamp;
+    private String sourceRepository;
 
     public MetaModel(){
     }
@@ -53,5 +54,12 @@ public class MetaModel implements Serializable {
 
     public void setPublishedTimestamp(final Date publishedTimestamp) {
         this.publishedTimestamp = publishedTimestamp;
+    }
+
+    public String getSourceRepository() {
+        return sourceRepository;
+    }
+    public void setSourceRepository(String sourceRepository) {
+        this.sourceRepository = sourceRepository;
     }
 }
