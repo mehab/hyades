@@ -86,7 +86,7 @@
     <lib.open.vulnerability.clients.version>7.2.2</lib.open.vulnerability.clients.version>
     <lib.packageurl-java.version>1.5.0</lib.packageurl-java.version>
     <lib.protobuf-java.version>4.29.3</lib.protobuf-java.version>
-    <lib.quarkus-github-api.version>1.322.0</lib.quarkus-github-api.version>
+    <lib.quarkus-github-api.version>1.326.0</lib.quarkus-github-api.version>
     <lib.quarkus-mailpit.version>1.6.1</lib.quarkus-mailpit.version>
     <lib.snappy-java.version>1.1.10.7</lib.snappy-java.version>
     <lib.testcontainers-minio.version>1.20.4</lib.testcontainers-minio.version>
