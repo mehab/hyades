@@ -75,7 +75,7 @@
     <lib.httpclient5.version>5.4.2</lib.httpclient5.version>
     <lib.java-uuid-generator.version>5.1.0</lib.java-uuid-generator.version>
     <lib.json-unit.version>4.1.0</lib.json-unit.version>
-    <lib.kafka.version>3.7.1</lib.kafka.version>
+    <lib.kafka.version>3.9.0</lib.kafka.version>
     <lib.maven-artifact.version>4.0.0-rc-2</lib.maven-artifact.version>
     <lib.micrometer-jvm-extras.version>0.2.2</lib.micrometer-jvm-extras.version>
     <lib.minio.version>8.5.17</lib.minio.version>
