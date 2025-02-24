@@ -21,6 +21,8 @@ package org.dependencytrack.repometaanalyzer.util;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 
+import static com.github.packageurl.PackageURLBuilder.aPackageURL;
+
 public final class PurlUtil {
 
     private PurlUtil() {
@@ -55,6 +57,26 @@ public final class PurlUtil {
                     The provided PURL is invalid, even though it should have been
                     validated in a previous processing step
                     """, e);
+        }
+    }
+
+    /**
+     * @param original the purl
+     * @return the purl coordinates or null
+     */
+     public static PackageURL silentPurlCoordinatesOnly(final PackageURL original) {
+        if (original == null) {
+            return null;
+        }
+        try {
+            return aPackageURL()
+                    .withType(original.getType())
+                    .withNamespace(original.getNamespace())
+                    .withName(original.getName())
+                    .withVersion(original.getVersion())
+                    .build();
+        } catch (MalformedPackageURLException e) {
+            return null;
         }
     }
 }
