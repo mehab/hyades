@@ -39,7 +39,6 @@ import org.dependencytrack.proto.KafkaProtobufDeserializer;
 import org.dependencytrack.proto.KafkaProtobufSerializer;
 import org.dependencytrack.proto.repometaanalysis.v1.AnalysisCommand;
 import org.dependencytrack.proto.repometaanalysis.v1.AnalysisResult;
-import org.dependencytrack.proto.repometaanalysis.v1.FetchMeta;
 import org.dependencytrack.repometaanalyzer.model.IntegrityMeta;
 import org.dependencytrack.repometaanalyzer.model.MetaAnalyzerCacheKey;
 import org.dependencytrack.repometaanalyzer.model.MetaModel;
@@ -98,13 +97,18 @@ public class RepositoryMetaAnalyzerTopologyTest {
                 .thenReturn(Optional.of(analyzerMock));
     }
 
+    @AfterEach
+    void afterEach() {
+        testDriver.close();
+        cache.invalidateAll().await().indefinitely();
+    }
+
     @Test
     void testAnalyzerCacheMiss() throws Exception {
         final var command = AnalysisCommand.newBuilder()
                 .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                         .setPurl("pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.2")
                         .build())
-                .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA_AND_LATEST_VERSION)
                 .build();
 
         // mock repository data
@@ -144,7 +148,6 @@ public class RepositoryMetaAnalyzerTopologyTest {
         final var command = AnalysisCommand.newBuilder()
                 .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                         .setPurl("pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.2"))
-                .setFetchMeta(FetchMeta.FETCH_META_LATEST_VERSION)
                 .build();
 
         // mock repository data
@@ -156,18 +159,16 @@ public class RepositoryMetaAnalyzerTopologyTest {
         when(repoEntityRepositoryMock.findEnabledRepositoriesByType(any()))
                 .thenReturn(List.of(repository));
 
-        final var result = AnalysisResult.newBuilder()
-                .setComponent(command.getComponent())
-                .setRepository("testRepository")
-                .setLatestVersion("test")
-                .build();
+        final var cachedRepoMeta = new MetaModel();
+        cachedRepoMeta.setRepositoryIdentifier("testRepository");
+        cachedRepoMeta.setLatestVersion("test");
         when(analyzerMock.getName()).thenReturn("testAnalyzer");
 
         // populate the cache to hit the match
         final var cacheKey = new MetaAnalyzerCacheKey("testAnalyzer",
                 "pkg:maven/com.fasterxml.jackson.core/jackson-databind",
                 "https://repo1.maven.org/maven2/");
-        cache.as(CaffeineCache.class).put(cacheKey, completedFuture(result));
+        cache.as(CaffeineCache.class).put(cacheKey, completedFuture(cachedRepoMeta));
 
         inputTopic.pipeInput("foo", command);
         final KeyValue<String, AnalysisResult> record = outputTopic.readKeyValue();
@@ -182,7 +183,6 @@ public class RepositoryMetaAnalyzerTopologyTest {
                 .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                         .setUuid(uuid.toString())
                         .setPurl("pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.2"))
-                .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA)
                 .build();
 
         // mock repository data
@@ -194,20 +194,16 @@ public class RepositoryMetaAnalyzerTopologyTest {
         when(repoEntityRepositoryMock.findEnabledRepositoriesByType(any()))
                 .thenReturn(List.of(repository));
 
-        final var result = AnalysisResult.newBuilder()
-                .setComponent(command.getComponent())
-                .setRepository("testRepository")
-                .setLatestVersion("test")
-                .setIntegrityMeta(org.dependencytrack.proto.repometaanalysis.v1.IntegrityMeta.newBuilder()
-                        .setSha1("sha1").build())
-                .build();
+        final var cachedIntegrityMeta = new IntegrityMeta();
+        cachedIntegrityMeta.setSha1("sha1");
+
         when(analyzerMock.getName()).thenReturn("testAnalyzer");
 
         // populate the cache to hit the match
         final var cacheKey = new MetaAnalyzerCacheKey("testAnalyzer",
                 "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.2",
                 "https://repo1.maven.org/maven2/");
-        cache.as(CaffeineCache.class).put(cacheKey, completedFuture(result));
+        cache.as(CaffeineCache.class).put(cacheKey, completedFuture(cachedIntegrityMeta));
 
         inputTopic.pipeInput("foo", command);
         final KeyValue<String, AnalysisResult> record = outputTopic.readKeyValue();
@@ -222,7 +218,6 @@ public class RepositoryMetaAnalyzerTopologyTest {
         final var command = AnalysisCommand.newBuilder()
                 .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder()
                         .setPurl("pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.2"))
-                .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA_AND_LATEST_VERSION)
                 .build();
 
         inputTopic.pipeInput("foo", command);
@@ -235,7 +230,6 @@ public class RepositoryMetaAnalyzerTopologyTest {
     void testNoPurlComponent() {
         final var command = AnalysisCommand.newBuilder()
                 .setComponent(org.dependencytrack.proto.repometaanalysis.v1.Component.newBuilder())
-                .setFetchMeta(FetchMeta.FETCH_META_INTEGRITY_DATA_AND_LATEST_VERSION)
                 .build();
 
         inputTopic.pipeInput("foo", command);
@@ -260,10 +254,5 @@ public class RepositoryMetaAnalyzerTopologyTest {
         Assertions.assertFalse(record.value.hasIntegrityMeta());
     }
 
-    @AfterEach
-    void afterEach() {
-        testDriver.close();
-        cache.invalidateAll();
-    }
 }
 

@@ -30,14 +30,13 @@ public final class PurlUtil {
      * @param purl the purl string to parse
      * @return a PackageURL object
      */
-    public static PackageURL parsePurlCoordinates(final String purl) {
+    public static PackageURL parsePurl(final String purl) {
         try {
             return new PackageURL(purl);
         } catch (MalformedPackageURLException e) {
             throw new IllegalStateException("""
-                    The provided PURL is invalid, even though it should have been
-                    validated in a previous processing step
-                    """, e);
+                    The provided PURL is invalid, even though it should have been \
+                    validated in a previous processing step""", e);
         }
     }
 
@@ -52,9 +51,8 @@ public final class PurlUtil {
                     parsedPurl.getName(), null, null, null);
         } catch (MalformedPackageURLException e) {
             throw new IllegalStateException("""
-                    The provided PURL is invalid, even though it should have been
-                    validated in a previous processing step
-                    """, e);
+                    The provided PURL is invalid, even though it should have been \
+                    validated in a previous processing step""", e);
         }
     }
 }

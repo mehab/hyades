@@ -60,6 +60,8 @@ public class RepositoryMetaAnalyzerTopology {
                         .withName(processorNameConsume(KafkaTopic.REPO_META_ANALYSIS_COMMAND)))
                 .filter((key, scanCommand) -> scanCommand.hasComponent() && isValidPurl(scanCommand.getComponent().getPurl()),
                         Named.as("filter_components_with_valid_purl"))
+                // TODO: This repartition is no longer required as of API server 5.6.0.
+                //  Remove this in Hyades v0.7.0 and consume from REPO_META_ANALYSIS_COMMAND directly instead.
                 // Re-key to PURL coordinates WITHOUT VERSION. As we are fetching data for packages,
                 // but not specific package versions, including the version here would make our caching
                 // largely ineffective. We want events for the same package to be sent to the same partition.

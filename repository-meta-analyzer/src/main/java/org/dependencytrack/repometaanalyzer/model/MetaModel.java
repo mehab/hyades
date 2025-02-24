@@ -28,9 +28,12 @@ public class MetaModel implements Serializable {
     private Component component;
     private String latestVersion;
     private Date publishedTimestamp;
+    private String repositoryIdentifier;
+    private final Date fetchedAt = new Date();
 
-    public MetaModel(){
+    public MetaModel() {
     }
+
     public MetaModel(final Component component) {
         this.component = component;
     }
@@ -54,4 +57,17 @@ public class MetaModel implements Serializable {
     public void setPublishedTimestamp(final Date publishedTimestamp) {
         this.publishedTimestamp = publishedTimestamp;
     }
+
+    public String getRepositoryIdentifier() {
+        return repositoryIdentifier;
+    }
+
+    public void setRepositoryIdentifier(final String repositoryIdentifier) {
+        this.repositoryIdentifier = repositoryIdentifier;
+    }
+
+    public Date getFetchedAt() {
+        return fetchedAt;
+    }
+
 }
