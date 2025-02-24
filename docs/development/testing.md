@@ -102,6 +102,15 @@ In CI, end-to-end tests are executed for every push to the `main` branch, as wel
 They can additionally be run manually, via the GitHub Actions UI. Both the API server and Hyades version
 can be customized before execution.
 
+### E2E Testing with Playwright (BDD)
+
+Apart from the current E2E-Testing approach, there will be another approach managed from now on that uses **Playwright BDD** (Behaviour-Driven-Development).
+The new approach provides a more simplified understanding on what is executed in each test.
+More on that can be found inside [Playwright README](https://github.com/DependencyTrack/hyades/blob/master/e2e/playwright-tests/README.md)
+
+*V1 will be managed inside the Hyades repository. 
+The next version will be decoupled into its own repository, abstracting it from Hyades entirely and also allowing for DTrackV4 (aka the Monolith) to be tested.*
+
 ## Manual Tests
 
 ### Docker Compose

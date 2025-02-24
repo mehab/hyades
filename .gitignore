@@ -57,3 +57,12 @@ testdata/boms/generated/*.cdx.json
 
 # Material for MkDocs
 .cache/
+/node_modules/
+/test-results/
+/blob-report/
+
+# Playwright E2E
+/playwright-test-results/
+/e2e/playwright-tests/resources/locales
+/e2e/playwright-tests/**/.*
+playwright-report
