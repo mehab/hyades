@@ -1,0 +1,104 @@
+name: Playwright E2E Tests
+on:
+  workflow_dispatch:
+     inputs:
+      project:
+        description: 'Select the Browser to be used for E2E Testing'
+        required: true
+        default: 'chromium_test_workflow'
+        type: choice
+        options:
+          - chromium_test_workflow
+          - firefox_test_workflow
+          - webkit_test_workflow
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  run-playwright-e2e:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Add Environment Variable To DependencyTrack Apiserver
+        run: |
+          cat <<EOF > docker-compose.override.yml
+          services:
+            apiserver:
+              environment:
+                ALPINE_BCRYPT_ROUNDS: "4"
+          EOF
+
+      - name: Start DependencyTrack
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.override.yml --profile demo up -d --pull always
+
+      - name: Generate Random UUID for password use
+        run: |
+          RANDOM_PASSWORD=$(uuidgen -r)
+          echo "::add-mask::$RANDOM_PASSWORD" # Mask the value
+          echo "RANDOM_PASSWORD=$RANDOM_PASSWORD" >> $GITHUB_ENV
+
+      - name: Install necessary playwright dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Generate BDD Tests
+        run:  npx bddgen
+
+      - name: Run Playwright tests
+        run: npx playwright test --project=${{ inputs.project || 'chromium_test_workflow' }}
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: playwright-test-results/allure-results
+
+  publish-results:
+    needs: run-playwright-e2e
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-results
+          path: playwright-test-results/allure-results
+
+      - name: Load test report history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          repository: Dependency-Track/allure-report
+          ref: main
+          path: latest-test-results
+          token: ${{ secrets.PERSONAL_TOKEN }}
+
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.11
+        if: always()
+        with:
+          gh_pages: latest-test-results
+          allure_history: allure-history # directory to be published
+          allure_results: playwright-test-results/allure-results # path in project to allure report
+          github_repo: Dependency-Track/allure-report
+          github_repo_owner: Dependency-Track
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          external_repository: Dependency-Track/allure-report
+          publish_branch: main # branch-name to paste history to
+          publish_dir: allure-history # directory to be published
+          user_name: 'github-actions[bot]' # user for publishing
+          user_email: 'github-actions[bot]@users.noreply.github.com' # email for publishing
